@@ -6,10 +6,13 @@ latexrender
     :target: http://badge.fury.io/py/latexrender
     
 .. image:: https://travis-ci.org/lpomfrey/latexrender.png?branch=master
-        :target: https://travis-ci.org/lpomfrey/latexrender
+    :target: https://travis-ci.org/lpomfrey/latexrender
+
+.. image:: https://coveralls.io/repos/lpomfrey/latexrender/badge.png 
+    :target: https://coveralls.io/r/lpomfrey/latexrender 
 
 .. image:: https://pypip.in/d/latexrender/badge.png
-        :target: https://crate.io/packages/latexrender?version=latest
+    :target: https://crate.io/packages/latexrender?version=latest
 
 
 A simple Flask app for rendering LaTeX snippets into images.
