@@ -144,19 +144,17 @@ class LatexRenderer(object):
         return img_filename
 
 
-app.renderer = LatexRenderer(
-    output_dir=app.config['OUTPUT_DIR'],
-    template=app.config['TEMPLATE'],
-    latex=app.config['XELATEX'],
-    pdftops=app.config['PDFTOPS'],
-)
-
-
 @app.route('/<b64latex>.png')
 @app.route('/<b64latex>/')
 def latexrender(b64latex=''):
     try:
-        return send_file(app.renderer.render(b64latex))
+        renderer = LatexRenderer(
+            output_dir=app.config['OUTPUT_DIR'],
+            template=app.config['TEMPLATE'],
+            latex=app.config['XELATEX'],
+            pdftops=app.config['PDFTOPS'],
+        )
+        return send_file(renderer.render(b64latex))
     except (SuspiciousOperation, InvalidLatex):
         return abort(400)
     except (Exception, EnvironmentError) as e:
