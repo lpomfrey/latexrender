@@ -4,7 +4,7 @@ Usage
 
 Setup is done using the following environment variables:
 
-+========================+======================================+=======================+
++------------------------+--------------------------------------+-----------------------+
 | Variable               | Notes                                | Default               |
 +========================+======================================+=======================+
 | LATEXRENDER_OUTPUT_DIR | Directory where image files will     | ``/tmp/latexrender/`` |
