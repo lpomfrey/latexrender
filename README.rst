@@ -13,26 +13,3 @@ A simple Flask app for rendering LaTeX snippets into images.
 
 * Free software: BSD license
 * Documentation: http://latexrender.rtfd.org.
-
-Requirements
-------------
-
-Aside from those specified in requirements.txt you'll need the following 
-instaled on your system and in your path:
-* xelatex
-* pdftops
-
-
-Installation and Usage
-----------------------
-
-Install using pip::
-    pip install latexrender
-
-Run using your favourite WSGI server::
-    chausette latexrender.app
-    gunicorn latexrender.app
-
-Pass base64 encoded LaTeX snippets as the URL in one of the following forms::
-    http://localhost:8080/<b64latex>/
-    http://localhost:8080/<b64latex>.png
