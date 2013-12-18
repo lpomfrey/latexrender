@@ -4,7 +4,6 @@ Usage
 
 Setup is done using the following environment variables:
 
-+------------------------+--------------------------------------+-----------------------+
 +========================+======================================+=======================+
 | Variable               | Notes                                | Default               |
 +========================+======================================+=======================+
@@ -23,10 +22,13 @@ Setup is done using the following environment variables:
 |                        | the generated image directly.        |                       |
 +------------------------+--------------------------------------+-----------------------+
 
+
 Run using your favourite WSGI server::
+
     chausette latexrender.app
     gunicorn latexrender.app
 
 Pass base64 encoded LaTeX snippets as the URL in one of the following forms::
+
     http://localhost:8080/<b64latex>/
     http://localhost:8080/<b64latex>.png
