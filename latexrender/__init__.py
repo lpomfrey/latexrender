@@ -14,7 +14,6 @@ from distutils import version
 from distutils.spawn import find_executable
 from flask import Flask, send_file, abort
 from jinja2 import Template
-from PIL import Image, ImageOps
 
 
 __author__ = 'Luke Pomfrey'
@@ -26,7 +25,7 @@ version_info = tuple(version.LooseVersion(__version__).version)
 OUTPUT_DIR = os.environ.get('LATEXRENDER_OUTPUT_DIR', '/tmp/latexrender/')
 TEMPLATE = os.environ.get('LATEXRENDER_TEMPLATE')
 XELATEX = os.environ.get('LATEXRENDER_XELATEX')
-PDFTOPS = os.environ.get('LATEXRENDER_PDFTOPS')
+CONVERT = os.environ.get('LATEXRENDER_CONVERT')
 USE_X_SENDFILE = os.environ.get('USE_X_SENDFILE', 'true') in (
     'true', 't', 'y', 'yes', '1', 'on')
 
@@ -49,16 +48,16 @@ class InvalidLatex(Exception):
 
 class LatexRenderer(object):
 
-    def __init__(self, output_dir, template=None, latex=None, pdftops=None):
+    def __init__(self, output_dir, template=None, latex=None, convert=None):
         self.output_dir = os.path.abspath(output_dir)
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
         self.latex = latex or find_executable('xelatex')
-        self.pdftops = pdftops or find_executable('pdftops')
+        self.convert = convert or find_executable('convert')
         self.template = \
             template or os.path.join(os.path.dirname(__file__), 'template.tex')
         assert self.latex, 'No xelatex executable found'
-        assert self.pdftops, 'No pdftops executable found'
+        assert self.convert, 'No convert executable found'
         self.illegal_tags = [
             '\\afterassignment',
             '\\aftergroup',
@@ -100,7 +99,6 @@ class LatexRenderer(object):
     def render_image(self, working_dir, basename, latex, img_filename):
         tex_filename = os.path.join(working_dir, '{0}.tex'.format(basename))
         pdf_filename = os.path.join(working_dir, '{0}.pdf'.format(basename))
-        ps_filename = os.path.join(working_dir, '{0}.ps'.format(basename))
         with open(tex_filename, 'w') as tex_file:
             tex_file.write(latex)
         latex_args = [
@@ -113,21 +111,20 @@ class LatexRenderer(object):
             subprocess.check_call(latex_args)
         except subprocess.CalledProcessError:
             raise InvalidLatex('Error running latex command')
-        pdftops_args = [
-            self.pdftops,
+        convert_args = [
+            self.convert,
             pdf_filename,
-            ps_filename
+            '-fuzz',
+            '5%',
+            '-trim',
+            img_filename
         ]
-        subprocess.check_call(pdftops_args)
-        img = Image.open(ps_filename)
-        img = ImageOps.crop(img, border=1)
-        if not os.path.exists(os.path.dirname(img_filename)):
-            os.makedirs(os.path.dirname(img_filename))
-        with open(img_filename, 'w+') as img_file:
-            img.save(img_file, 'PNG')
+        subprocess.check_call(convert_args)
         return img_filename
 
     def render(self, b64latex):
+        if not isinstance(b64latex, bytes):
+            b64latex = b64latex.encode('utf-8')
         basename = hashlib.md5(b64latex).hexdigest()
         img_filename = os.path.join(
             self.output_dir, '{0}.png'.format(basename)
@@ -135,7 +132,7 @@ class LatexRenderer(object):
         if os.path.exists(img_filename):
             return img_filename
         working_dir = mkdtemp(prefix='latexrenderwd')
-        latex = base64.b64decode(b64latex)
+        latex = str(base64.b64decode(b64latex))
         if any(tag in latex for tag in self.illegal_tags):
             raise SuspiciousOperation('Illegal tag found')
         latex = self.render_template(latex)
@@ -152,7 +149,7 @@ def latexrender(b64latex=''):
             output_dir=app.config['OUTPUT_DIR'],
             template=app.config['TEMPLATE'],
             latex=app.config['XELATEX'],
-            pdftops=app.config['PDFTOPS'],
+            convert=app.config['CONVERT'],
         )
         return send_file(renderer.render(b64latex))
     except (SuspiciousOperation, InvalidLatex):
