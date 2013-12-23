@@ -7,6 +7,7 @@ test_latexrender
 
 Tests for `latexrender` module.
 """
+from __future__ import unicode_literals
 
 import base64
 import hashlib
@@ -66,36 +67,38 @@ class TestLatexrender(unittest.TestCase):
     def test_illegal_tags(self):
         for tag in ILLEGAL_TAGS:
             latex = '$$ a + x = 1 {0} $$'.format(tag)
-            latex = base64.b64encode(latex)
-            self.application.get('/{0}/'.format(latex), status=400)
+            latex = base64.b64encode(latex.encode('utf-8'))
+            self.application.get(
+                '/{0}/'.format(latex.decode('utf-8')), status=400)
 
     def test_invalid_latex(self):
-        latex = r'$$ a + x = 1 $ \begin{a} \/\/'
-        latex = base64.b64encode(latex)
-        self.application.get('/{0}/'.format(latex), status=400)
+        latex = '$$ a + x = 1 $ \\begin{a} \/\/'
+        latex = base64.b64encode(latex.encode('utf-8'))
+        self.application.get('/{0}/'.format(latex.decode('utf-8')), status=400)
 
     def test_creates_file_with_md5(self):
-        latex = r'$$ a + x = 1 $$'
-        latex = base64.b64encode(latex)
+        latex = '$$ a + x = 1 $$'
+        latex = base64.b64encode(latex.encode('utf-8'))
         ltx_hash = hashlib.md5(latex).hexdigest()
-        self.application.get('/{0}/'.format(latex), status=200)
+        self.application.get('/{0}/'.format(latex.decode('utf-8')), status=200)
         self.assertTrue(os.path.exists(
             os.path.join(self.output_dir, '{0}.png'.format(ltx_hash))
         ))
 
     def test_uses_sendfile(self):
         self.application.app.use_x_sendfile = True
-        latex = r'$$ a + x = 3 $$'
-        latex = base64.b64encode(latex)
+        latex = '$$ a + x = 3 $$'
+        latex = base64.b64encode(latex.encode('utf-8'))
         ltx_hash = hashlib.md5(latex).hexdigest()
         file_path = os.path.join(self.output_dir, '{0}.png'.format(ltx_hash))
-        resp = self.application.get('/{0}/'.format(latex), status=200)
+        resp = self.application.get(
+            '/{0}/'.format(latex.decode('utf-8')), status=200)
         self.assertEqual(resp.headers['X-Sendfile'], file_path)
 
     def test_uses_previously_generated_file(self):
         self.application.app.config['USE_X_SENDFILE'] = False
-        latex = r'$$ a + x = 2 $$'
-        latex = base64.b64encode(latex)
+        latex = '$$ a + x = 2 $$'
+        latex = base64.b64encode(latex.encode('utf-8'))
         ltx_hash = hashlib.md5(latex).hexdigest()
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
@@ -105,7 +108,8 @@ class TestLatexrender(unittest.TestCase):
             img.save(f, 'PNG')
         buffer = StringIO()
         img.save(buffer, 'PNG')
-        resp = self.application.get('/{0}/'.format(latex), status=200)
+        resp = self.application.get(
+            '/{0}/'.format(latex.decode('utf-8')), status=200)
         self.assertEqual(resp.body, buffer.getvalue())
 
     def tearDown(self):
