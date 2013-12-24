@@ -13,10 +13,10 @@ import base64
 import hashlib
 import os
 import shutil
+import tempfile
 import unittest
 
 from PIL import Image
-from six import StringIO
 from webtest import TestApp
 
 from latexrender import app
@@ -104,13 +104,18 @@ class TestLatexrender(unittest.TestCase):
             os.makedirs(self.output_dir)
         file_path = os.path.join(self.output_dir, '{0}.png'.format(ltx_hash))
         img = Image.new('RGB', (5, 5))
-        with open(file_path, 'w') as f:
-            img.save(f, 'PNG')
-        buffer = StringIO()
-        img.save(buffer, 'PNG')
-        resp = self.application.get(
-            '/{0}/'.format(latex.decode('utf-8')), status=200)
-        self.assertEqual(resp.body, buffer.getvalue())
+        img.save(file_path, 'PNG')
+        _, test_file = tempfile.mkstemp(
+            prefix='latexrendertest', suffix='.png')
+        img.save(test_file, 'PNG')
+        try:
+            resp = self.application.get(
+                '/{0}/'.format(latex.decode('utf-8')), status=200)
+            with open(test_file, 'rb') as f:
+                self.assertEqual(resp.body, f.read())
+        finally:
+            if os.path.exists(test_file):
+                os.remove(test_file)
 
     def tearDown(self):
         if os.path.exists(self.output_dir):

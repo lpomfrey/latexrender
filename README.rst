@@ -9,7 +9,8 @@ latexrender
     :target: https://crate.io/packages/latexrender?version=latest
 
 
-A simple Flask app for rendering LaTeX snippets into images.
+A simple Flask app for rendering LaTeX snippets into images using ``latex`` and
+``dvipng``.
 
 * Free software: BSD license
 * Documentation: http://latexrender.rtfd.org.
