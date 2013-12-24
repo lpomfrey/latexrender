@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 import os
 import sys
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 if sys.argv[-1] == 'publish':
@@ -16,15 +16,13 @@ readme = open('README.rst').read()
 
 setup(
     name='latexrender',
-    version='0.3.0',
+    version='0.3.1',
     description='A simple Flask app for rendering latex snippets into images.',
     long_description=readme,
     author='Luke Pomfrey',
     author_email='lpomfrey@gmail.com',
     url='https://github.com/lpomfrey/latexrender',
-    packages=[
-        'latexrender',
-    ],
+    packages=find_packages(exclude='tests'),
     package_dir={'latexrender': 'latexrender'},
     include_package_data=True,
     install_requires=[
