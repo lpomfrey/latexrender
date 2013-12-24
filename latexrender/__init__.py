@@ -16,6 +16,12 @@ from flask import Flask, send_file, abort
 from jinja2 import Template
 from PIL import Image, ImageChops
 
+try:
+    from urllib import unquote
+except ImportError:
+    # Python 3
+    from urllib.parse import unquote  # NOQA
+
 
 __author__ = 'Luke Pomfrey'
 __email__ = 'lpomfrey@gmail.com'
@@ -168,7 +174,7 @@ def latexrender(b64latex=''):
             latex=app.config['XELATEX'],
             dvipng=app.config['DVIPNG'],
         )
-        img = renderer.render(b64latex)
+        img = renderer.render(unquote(b64latex))
         if app.config['SENDFILE_ROOT'] and app.use_x_sendfile:
             img = os.path.join(app.config['SENDFILE_ROOT'], img)
         return send_file(img)
