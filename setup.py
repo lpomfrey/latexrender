@@ -10,13 +10,14 @@ from setuptools import setup, find_packages
 
 if sys.argv[-1] == 'publish':
     os.system('python setup.py sdist upload')
+    os.system('python setup.py bdist_wheel upload')
     sys.exit()
 
 readme = open('README.rst').read()
 
 setup(
     name='latexrender',
-    version='0.3.5',
+    version='0.3.6',
     description='A simple Flask app for rendering latex snippets into images.',
     long_description=readme,
     author='Luke Pomfrey',

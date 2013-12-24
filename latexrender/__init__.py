@@ -14,7 +14,6 @@ from distutils import version
 from distutils.spawn import find_executable
 from flask import Flask, send_file, abort
 from jinja2 import Template
-from jinja2.utils import soft_unicode
 from PIL import Image, ImageChops
 
 try:
@@ -26,7 +25,7 @@ except ImportError:
 
 __author__ = 'Luke Pomfrey'
 __email__ = 'lpomfrey@gmail.com'
-__version__ = '0.3.5'
+__version__ = '0.3.6'
 version_info = tuple(version.LooseVersion(__version__).version)
 
 
@@ -174,8 +173,7 @@ def latexrender(b64latex=''):
             latex=app.config['XELATEX'],
             dvipng=app.config['DVIPNG'],
         )
-        if '%' in b64latex:
-            b64latex = unquote(b64latex)
+        b64latex = unquote(b64latex)
         if not isinstance(b64latex, bytes):
             b64latex = b64latex.encode('utf-8')
         img = renderer.render(b64latex)
