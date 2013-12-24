@@ -26,7 +26,7 @@ except ImportError:
 
 __author__ = 'Luke Pomfrey'
 __email__ = 'lpomfrey@gmail.com'
-__version__ = '0.3.4'
+__version__ = '0.3.5'
 version_info = tuple(version.LooseVersion(__version__).version)
 
 
@@ -155,10 +155,7 @@ class LatexRenderer(object):
             return img_filename
         working_dir = mkdtemp(prefix='latexrenderwd')
         latex = base64.b64decode(b64latex)
-        try:
-            latex = latex.decode('utf-8')
-        except:
-            latex = soft_unicode(latex)
+        latex = latex.decode('utf-8')
         if any(tag in latex for tag in self.illegal_tags):
             raise SuspiciousOperation('Illegal tag found')
         latex = self.render_template(latex)
@@ -177,9 +174,11 @@ def latexrender(b64latex=''):
             latex=app.config['XELATEX'],
             dvipng=app.config['DVIPNG'],
         )
+        if '%' in b64latex:
+            b64latex = unquote(b64latex)
         if not isinstance(b64latex, bytes):
             b64latex = b64latex.encode('utf-8')
-        img = renderer.render(unquote(b64latex))
+        img = renderer.render(b64latex)
         if app.config['SENDFILE_ROOT'] and app.use_x_sendfile:
             img = os.path.join(app.config['SENDFILE_ROOT'], img)
         return send_file(img)
