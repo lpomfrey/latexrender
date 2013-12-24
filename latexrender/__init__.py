@@ -25,7 +25,7 @@ except ImportError:
 
 __author__ = 'Luke Pomfrey'
 __email__ = 'lpomfrey@gmail.com'
-__version__ = '0.3.1'
+__version__ = '0.3.2'
 version_info = tuple(version.LooseVersion(__version__).version)
 
 
