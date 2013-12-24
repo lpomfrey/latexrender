@@ -29,6 +29,7 @@ XELATEX = os.environ.get('LATEXRENDER_XELATEX')
 DVIPNG = os.environ.get('LATEXRENDER_DVIPNG')
 USE_X_SENDFILE = os.environ.get('USE_X_SENDFILE', 'true') in (
     'true', 't', 'y', 'yes', '1', 'on')
+SENDFILE_ROOT = os.environ.get('LATEXRENDER_SENDFILE_ROOT', '')
 
 
 app = Flask('latexrender')
@@ -167,7 +168,10 @@ def latexrender(b64latex=''):
             latex=app.config['XELATEX'],
             dvipng=app.config['DVIPNG'],
         )
-        return send_file(renderer.render(b64latex))
+        img = renderer.render(b64latex)
+        if app.config['SENDFILE_ROOT'] and app.use_x_sendfile:
+            img = os.path.join(app.config['SENDFILE_ROOT'], img)
+        return send_file(img)
     except (SuspiciousOperation, InvalidLatex):
         return abort(400)
     except (Exception, EnvironmentError) as e:

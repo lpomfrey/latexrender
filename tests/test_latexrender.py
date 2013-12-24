@@ -60,6 +60,7 @@ class TestLatexrender(unittest.TestCase):
 
     def setUp(self):
         app.config['USE_X_SENDFILE'] = True
+        app.config['SENDFILE_ROOT'] = ''
         self.output_dir = app.config.get('OUTPUT_DIR')
         self.application = TestApp(app)
         self.application.debug = True
@@ -94,6 +95,19 @@ class TestLatexrender(unittest.TestCase):
         resp = self.application.get(
             '/{0}/'.format(latex.decode('utf-8')), status=200)
         self.assertEqual(resp.headers['X-Sendfile'], file_path)
+
+    def test_uses_sendfile_root(self):
+        self.application.app.use_x_sendfile = True
+        self.application.app.config['SENDFILE_ROOT'] = '/internal/'
+        latex = '$$ a + x = 3 $$'
+        latex = base64.b64encode(latex.encode('utf-8'))
+        ltx_hash = hashlib.md5(latex).hexdigest()
+        file_path = os.path.join(self.output_dir, '{0}.png'.format(ltx_hash))
+        resp = self.application.get(
+            '/{0}/'.format(latex.decode('utf-8')), status=200)
+        self.assertEqual(
+            resp.headers['X-Sendfile'], os.path.join('/internal/', file_path)
+        )
 
     def test_uses_previously_generated_file(self):
         self.application.app.config['USE_X_SENDFILE'] = False

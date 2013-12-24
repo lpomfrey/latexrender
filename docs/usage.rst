@@ -7,23 +7,27 @@ Configuration
 
 Setup is done using the following environment variables:
 
-+------------------------+--------------------------------------+-----------------------+
-| Variable               | Notes                                | Default               |
-+========================+======================================+=======================+
-| LATEXRENDER_OUTPUT_DIR | Directory where image files will     | ``/tmp/latexrender/`` |
-|                        | be saved and served from             |                       |
-+------------------------+--------------------------------------+-----------------------+
-| LATEXRENDER_TEMPLATE   | Jinja2 template to use for rendering | ``template.tex`` in   |
-|                        | the LaTeX snippet.                   | installation          |
-|                        |                                      | directory             |
-+------------------------+--------------------------------------+-----------------------+
-| LATEXRENDER_XELATEX    | Location of xelatex executable.      | (Auto)                |
-+------------------------+--------------------------------------+-----------------------+
-| LATEXRENDER_DVIPNG     | Location of dvipng executable.       | (Auto)                |
-+------------------------+--------------------------------------+-----------------------+
-| USE_X_SENDFILE         | Whether to use X-Sendfile or serve   | ``True``              |
-|                        | the generated image directly.        |                       |
-+------------------------+--------------------------------------+-----------------------+
++---------------------------+--------------------------------------+-----------------------+
+| Variable                  | Notes                                | Default               |
++===========================+======================================+=======================+
+| LATEXRENDER_OUTPUT_DIR    | Directory where image files will     | ``/tmp/latexrender/`` |
+|                           | be saved and served from             |                       |
++---------------------------+--------------------------------------+-----------------------+
+| LATEXRENDER_TEMPLATE      | Jinja2 template to use for rendering | ``template.tex`` in   |
+|                           | the LaTeX snippet.                   | installation          |
+|                           |                                      | directory             |
++---------------------------+--------------------------------------+-----------------------+
+| LATEXRENDER_XELATEX       | Location of xelatex executable.      | (Auto)                |
++---------------------------+--------------------------------------+-----------------------+
+| LATEXRENDER_DVIPNG        | Location of dvipng executable.       | (Auto)                |
++---------------------------+--------------------------------------+-----------------------+
+| USE_X_SENDFILE            | Whether to use X-Sendfile or serve   | ``True``              |
+|                           | the generated image directly.        |                       |
++---------------------------+--------------------------------------+-----------------------+
+| LATEXRENDER_SENDFILE_ROOT | A root directory to prepended to the | Empty string          |
+|                           | X-Sendfile header sent to the        |                       |
+|                           | upstream proxy.                      |                       |
++---------------------------+--------------------------------------+-----------------------+
 
 If not specified your path will be inspected to find ``latex`` and ``dvipng``.
 
