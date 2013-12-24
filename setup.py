@@ -16,7 +16,7 @@ readme = open('README.rst').read()
 
 setup(
     name='latexrender',
-    version='0.2.0',
+    version='0.3.0',
     description='A simple Flask app for rendering latex snippets into images.',
     long_description=readme,
     author='Luke Pomfrey',
