@@ -154,8 +154,6 @@ class LatexRenderer(object):
         latex = self.render_template(latex)
         self.render_image(working_dir, basename, latex, img_filename)
         shutil.rmtree(working_dir)
-        if os.path.exists(working_dir):
-            os.rmdir(working_dir)
         return img_filename
 
 
