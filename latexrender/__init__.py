@@ -25,7 +25,7 @@ except ImportError:
 
 __author__ = 'Luke Pomfrey'
 __email__ = 'lpomfrey@gmail.com'
-__version__ = '0.3.2'
+__version__ = '0.3.3'
 version_info = tuple(version.LooseVersion(__version__).version)
 
 
@@ -146,8 +146,6 @@ class LatexRenderer(object):
         return img_filename
 
     def render(self, b64latex):
-        if not isinstance(b64latex, bytes):
-            b64latex = b64latex.encode('utf-8')
         basename = hashlib.md5(b64latex).hexdigest()
         img_filename = os.path.join(
             self.output_dir, '{0}.png'.format(basename)
@@ -174,6 +172,8 @@ def latexrender(b64latex=''):
             latex=app.config['XELATEX'],
             dvipng=app.config['DVIPNG'],
         )
+        if not isinstance(b64latex, bytes):
+            b64latex = b64latex.encode('utf-8')
         img = renderer.render(unquote(b64latex))
         if app.config['SENDFILE_ROOT'] and app.use_x_sendfile:
             img = os.path.join(app.config['SENDFILE_ROOT'], img)
