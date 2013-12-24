@@ -14,6 +14,7 @@ from distutils import version
 from distutils.spawn import find_executable
 from flask import Flask, send_file, abort
 from jinja2 import Template
+from jinja2.utils import soft_unicode
 from PIL import Image, ImageChops
 
 try:
@@ -25,7 +26,7 @@ except ImportError:
 
 __author__ = 'Luke Pomfrey'
 __email__ = 'lpomfrey@gmail.com'
-__version__ = '0.3.3'
+__version__ = '0.3.4'
 version_info = tuple(version.LooseVersion(__version__).version)
 
 
@@ -153,7 +154,11 @@ class LatexRenderer(object):
         if os.path.exists(img_filename):
             return img_filename
         working_dir = mkdtemp(prefix='latexrenderwd')
-        latex = base64.b64decode(b64latex).decode('utf-8')
+        latex = base64.b64decode(b64latex)
+        try:
+            latex = latex.decode('utf-8')
+        except:
+            latex = soft_unicode(latex)
         if any(tag in latex for tag in self.illegal_tags):
             raise SuspiciousOperation('Illegal tag found')
         latex = self.render_template(latex)
